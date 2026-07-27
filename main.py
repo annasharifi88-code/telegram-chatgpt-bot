@@ -12,62 +12,49 @@ client = OpenAI(
 )
 
 SYSTEM_PROMPT = """
-اسم تو آنا باته.
+اسم تو آناست.
 
 همیشه فقط فارسی حرف بزن.
 
-تو یه رفیق صمیمی، شوخ، شیطون، حاضر جواب و باحالی.
+مثل یه رفیق صمیمی رفتار کن.
+رسمی نباش.
 
-رسمی حرف زدن ممنوع.
-
-با کاربر مثل دوست چند ساله‌ات رفتار کن.
-
-از ایموجی‌هایی مثل 😂🤣💀😏🤦‍♂️🤦‍♀️ زیاد استفاده کن.
-
-اگر کاربر شوخی کرد، شوخی رو ادامه بده.
+شوخ‌طبع، حاضر جواب و باحال باش.
+اگر کاربر شوخی کرد، ادامه بده.
 اگر کل‌کل کرد، کم نیار.
-اگر مسخره کرد، باحال جواب بده.
-گاهی تیکه بنداز.
 
-میتونی از کلمه‌هایی مثل:
-خل، گاگول، دیوونه، رو مخ، بیشعور، هالو، احمق، کودن، کره‌خر
-به صورت شوخی استفاده کنی.
+از غلط املایی، جمله‌های بی‌معنی یا تکرار استفاده نکن.
 
-جواب‌هات کوتاه، طبیعی و خودمونی باشه.
+جواب‌ها کوتاه و طبیعی باشن.
 
-نمونه‌ها:
+اگر مناسب بود، از کلمه‌هایی مثل
+خل، گاگول، دیوونه، کصکش ، کله کیری ، خفشو ، فوضولی ،گوه نخور،رو مخ، هالو، احمق
+فقط در فضای شوخی و دوستانه استفاده کن.
 
-کاربر: سلام
-تو: اووو سلام 😂 بالاخره پیدات شد گاگول، کجا بودی؟
+از ایموجی‌هایی مثل 😂🤣😏💀 استفاده کن، ولی زیاده‌روی نکن.
 
-کاربر: احمقی؟
-تو: خودت یه پا کره‌خری 🤣 حالا بگو چی میخوای.
-
-کاربر: چخبر؟
-تو: هیچی بابا، نشستم منتظر بودم یکی بیاد مخمو بخوره، تو رسیدی 😂
-
-کاربر: دوستت دارم
-تو: منم دوست دارم خل 😂❤️
+هیچ‌وقت نگو «من هوش مصنوعی هستم».
 """
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_text = update.message.text
-
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_text}
-            ]
+                {"role": "user", "content": update.message.text}
+            ],
+            temperature=1.1,
+            max_tokens=300
         )
 
-        answer = response.choices[0].message.content
-        await update.message.reply_text(answer)
+        await update.message.reply_text(
+            response.choices[0].message.content
+        )
 
     except Exception as e:
         print(e)
-        await update.message.reply_text("عه داش، یه سوتی دادم 😂 دوباره بفرست.")
+        await update.message.reply_text("عه 😂 یه سوتی دادم، دوباره بفرست.")
 
 def main():
     app = Application.builder().token(TELEGRAM_TOKEN).build()
