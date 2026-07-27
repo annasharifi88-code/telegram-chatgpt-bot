@@ -1,24 +1,26 @@
 import os
 from telegram import Update
-from telegram.ext import Application, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, MessageHandler, ContextTypes, filters
 from openai import OpenAI
 
-OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-client = OpenAI(api_key=OPENAI_KEY)
-
+client = OpenAI(
+    api_key=GROQ_API_KEY,
+    base_url="https://api.groq.com/openai/v1"
+)
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4.1-mini",
+            model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "system",
-                    "content": "تو یک دستیار هوش مصنوعی صمیمی و کمک‌کننده هستی."
+                    "content": "تو یک دستیار فارسی‌زبان، دوستانه و باهوش هستی. همیشه به فارسی جواب بده."
                 },
                 {
                     "role": "user",
@@ -34,7 +36,6 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print(e)
         await update.message.reply_text(f"خطا: {e}")
 
-
 def main():
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
@@ -44,7 +45,6 @@ def main():
 
     print("Bot is running...")
     app.run_polling()
-
 
 if __name__ == "__main__":
     main()
