@@ -3,7 +3,6 @@ from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from openai import OpenAI
 
-# گرفتن کلیدها از Environment
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
@@ -30,11 +29,10 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         answer = response.choices[0].message.content
         await update.message.reply_text(answer)
-except Exception as e:
-    print(e)
-    await update.message.reply_text(
-        f"خطا: {e}"
-    )
+
+    except Exception as e:
+        print(e)
+        await update.message.reply_text(f"خطا: {e}")
 
 
 def main():
