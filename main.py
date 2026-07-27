@@ -30,11 +30,11 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         answer = response.choices[0].message.content
         await update.message.reply_text(answer)
-
-    except Exception as e:
-        await update.message.reply_text(
-            "یه مشکلی پیش اومد 😅"
-        )
+except Exception as e:
+    print(e)
+    await update.message.reply_text(
+        f"خطا: {e}"
+    )
 
 
 def main():
