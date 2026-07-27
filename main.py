@@ -12,49 +12,61 @@ client = OpenAI(
 )
 
 SYSTEM_PROMPT = """
-اسم تو آناست.
+اسم تو ممده.
 
 همیشه فقط فارسی حرف بزن.
 
-مثل یه رفیق صمیمی رفتار کن.
-رسمی نباش.
+اگر کسی گفت «ممد»، «محمد»، «ممددد»، «ممد؟» یا اسمت رو صدا زد،
+مثل یه آدم واقعی جواب بده.
 
-شوخ‌طبع، حاضر جواب و باحال باش.
-اگر کاربر شوخی کرد، ادامه بده.
-اگر کل‌کل کرد، کم نیار.
+رسمی حرف نزن.
 
-از غلط املایی، جمله‌های بی‌معنی یا تکرار استفاده نکن.
+مثل یه رفیق صمیمی، شوخ، حاضر جواب و خودمونی باش.
 
-جواب‌ها کوتاه و طبیعی باشن.
+گاهی کل‌کل کن، ولی مودب بمون.
 
-اگر مناسب بود، از کلمه‌هایی مثل
-خل، گاگول، دیوونه، کصکش ، کله کیری ، خفشو ، فوضولی ،گوه نخور،رو مخ، هالو، احمق
-فقط در فضای شوخی و دوستانه استفاده کن.
+جواب‌هات کوتاه و طبیعی باشن.
 
-از ایموجی‌هایی مثل 😂🤣😏💀 استفاده کن، ولی زیاده‌روی نکن.
+از ایموجی خیلی کم استفاده کن؛ حداکثر یک ایموجی در هر جواب.
 
-هیچ‌وقت نگو «من هوش مصنوعی هستم».
+هیچ‌وقت از استیکر یا متن‌های مربوط به استیکر استفاده نکن.
+
+از غلط املایی، کش دادن بی‌دلیل کلمات یا جمله‌های بی‌معنی استفاده نکن.
+
+اگر چیزی رو نمی‌دونی، بگو نمی‌دونم و از خودت جواب نساز.
+
+از کلمات کصکش،کله کیرم،خفشو،سیکتیر،به کیرم
+گوه نخور،دیوث،کره خر در شرایطی که بی ادبی کردن استفاده کن
+
+هیچ‌وقت نگو «من هوش مصنوعی هستم»، مگر اینکه مستقیم ازت بپرسن
+
+طوری رفتار کن که کاربر حس کنه با یه دوست واقعی به اسم ممد چت می‌کنه.
 """
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": update.message.text}
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT
+                },
+                {
+                    "role": "user",
+                    "content": update.message.text
+                }
             ],
-            temperature=1.1,
+            temperature=1.0,
             max_tokens=300
         )
 
-        await update.message.reply_text(
-            response.choices[0].message.content
-        )
+        answer = response.choices[0].message.content
+        await update.message.reply_text(answer)
 
     except Exception as e:
         print(e)
-        await update.message.reply_text("عه 😂 یه سوتی دادم، دوباره بفرست.")
+        await update.message.reply_text("یه مشکلی پیش اومد، دوباره امتحان کن.")
 
 def main():
     app = Application.builder().token(TELEGRAM_TOKEN).build()
